@@ -1,12 +1,19 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import "./JokeCard.css";
 
 export const JokeCard = () => {
+  const fetchBtn = useRef(null);
+
   const [apiCalled, setApiCalled] = useState(false);
   const [joke, setJoke] = useState({});
   const [apiErr, setApiErr] = useState(false);
+
+  useEffect(() => {
+    if (apiCalled) fetchBtn.current.textContent = "Fetching...";
+    else fetchBtn.current.textContent = "Fetch joke";
+  }, [apiCalled]);
 
   const jokeEndpoint = "https://official-joke-api.appspot.com/random_joke";
 
@@ -26,20 +33,16 @@ export const JokeCard = () => {
 
   return (
     <div className="card">
-      <h2>Random Joke</h2>
+      <h1>Random Joke</h1>
       <p>Click the button to fetch a fresh one.</p>
-      <button disabled={apiCalled} onClick={btnClick}>
+      <button ref={fetchBtn} disabled={apiCalled} onClick={btnClick}>
         Fetch joke
       </button>
       {apiErr ? (
         <>
           <p id="errLine">Could not fetch a joke. Try again.</p>
-          <a href="#" onClick={btnClick}>
-            Try again
-          </a>
+          <button onClick={btnClick}>Try again</button>
         </>
-      ) : apiCalled ? (
-        <p>Fetching...</p>
       ) : joke.setup ? (
         <>
           <p>{joke.setup}</p>
